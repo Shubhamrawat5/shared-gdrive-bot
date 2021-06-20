@@ -50,4 +50,6 @@ Now open https://localhost/getAuthURL will give Oauth gmail authentication then 
 
 - Also change shared gdrive id in app.js file to your shared drive id
 
+- read documentation and it've a cool helpful feature to directly try the API -> https://developers.google.com/drive/api/v3/reference/
+
 - Bot running in TG group https://t.me/PVX_Community_Group and contact https://t.me/KryptonPVX for any query !
