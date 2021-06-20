@@ -1,5 +1,9 @@
 # shared-gdrive-bot
 
+To create a telegram bot to send your google shared drive files direct links to your telegram channel.
+
+<img src="https://i.ibb.co/hLNqGKq/gdrive.png"/>
+
 ## Enable google drive api
 
 1- Go to https://console.cloud.google.com/
