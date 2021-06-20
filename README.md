@@ -16,9 +16,9 @@ login and create a new project
 
 4- In "Credentials" , Create new "OAuth 2.0 Client IDs" with
 
-Authorised JavaScript origins (Url from which authorization request will come) -> https://localhost
+Authorised JavaScript origins (Url from which authorization request will come) -> http://localhost
 
-Authorised redirect URIs (Url after authorization will open) -> https://localhost/getToken
+Authorised redirect URIs (Url after authorization will open) -> http://localhost/getToken
 
 NOTE: change localhost URLs to your hosting url like yourapp.herokuapp.com/getToken in redirect URLs
 
@@ -42,9 +42,9 @@ token = your-bot-token
 
 > node app.js
 
-Now https://localhost will show "api running" if everything is ok!
+Now http://localhost will show "api running" if everything is ok!
 
-Now open https://localhost/getAuthURL will give Oauth gmail authentication then give permission and it will redirect to a page that will show "token accepted" and bot will start running!
+Now open http://localhost/getAuthURL will give Oauth gmail authentication then give permission and it will redirect to a page that will show "token accepted" and bot will start running!
 
 - File app.js is the main file , tg.js and gdrive.js files are just for my testing.
 
