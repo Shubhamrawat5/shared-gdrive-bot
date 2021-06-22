@@ -21,6 +21,20 @@ const startBotListener = () => {
   //   bot.sendMessage(chatId, JSON.stringify(oAuth2Client.credentials));
   // });
 
+  function generateMessage(searchType, count, arr) {
+    if (arr.length === 0) return "";
+    let msg = "\n------------------------------\n";
+    msg += `🔍 ${searchType} : ${arr.length}\n\n`;
+
+    arr.slice(0, count).forEach((url, index) => {
+      msg += `${index + 1}) Name: ${
+        url.name
+      }\nLink: https://drive.google.com/folderview?id=${url.id}\n\n`;
+    });
+
+    return msg;
+  }
+
   // listener
   bot.sendMessage(myChatId, "REMOVING BOT OLD LISTNERS");
   console.log("REMOVING BOT OLD LISTNERS");
@@ -42,7 +56,7 @@ const startBotListener = () => {
 
       console.log("QUERY TO SEARCH: ", text);
       let message = "💾 PVX GDRIVE 💾\n\n";
-      message += `🔍 Query: ${text} 🔍\n\n`;
+      message += `🔍 Query: ${text} 🔍\n`;
 
       /* ------------------------------ FOLDER SEARCH ----------------------------- */
       let queryData = {
@@ -51,15 +65,7 @@ const startBotListener = () => {
       };
 
       let response = await drive.files.list(queryData);
-      const folderArray = response.data.files;
-      // console.log("TOTAL RESULT (FOLDER) : ", folderArray.length);
-      message += `🔍 FOLDERS (TOP 10) : ${folderArray.length}\n\n`;
-
-      folderArray.slice(0, 10).forEach((folder, index) => {
-        message += `${index + 1}) Name: ${
-          folder.name
-        }\nLink: https://drive.google.com/folderview?id=${folder.id}\n\n`;
-      });
+      message += generateMessage("FOLDERS (TOP 10)", 10, response.data.files);
 
       /* ------------------------------- MP4 SEARCH ------------------------------- */
       queryData = {
@@ -67,15 +73,7 @@ const startBotListener = () => {
         q: `mimeType = 'video/mp4' and name contains '${text}'`,
       };
       response = await drive.files.list(queryData);
-      const mp4Array = response.data.files;
-      // console.log("TOTAL RESULT (mp4) :", mp4Array.length);
-      message += `\n🔍 MP4 FILES (Top 2) : ${mp4Array.length}\n\n`;
-
-      mp4Array.slice(0, 2).forEach((mp4, index) => {
-        message += `${index + 1}) Name: ${
-          mp4.name
-        }\nLink: https://drive.google.com/file/d/${mp4.id}\n\n`;
-      });
+      message += generateMessage("MP4 (TOP 2)", 2, response.data.files);
 
       /* ------------------------------- MKV SEARCH ------------------------------- */
       queryData = {
@@ -83,15 +81,7 @@ const startBotListener = () => {
         q: `mimeType = 'video/x-matroska' and name contains '${text}'`,
       };
       response = await drive.files.list(queryData);
-      const mkvArray = response.data.files;
-      // console.log("TOTAL RESULT (mp4) :", mkvArray.length);
-      message += `\n🔍 MKV FILES (Top 2) : ${mkvArray.length}\n\n`;
-
-      mkvArray.slice(0, 2).forEach((mkv, index) => {
-        message += `${index + 1}) Name: ${
-          mkv.name
-        }\nLink: https://drive.google.com/folderview?id=${mkv.id}\n\n`;
-      });
+      message += generateMessage("MKV (TOP 2)", 2, response.data.files);
 
       /* ------------------------------- TAR SEARCH ------------------------------- */
       queryData = {
@@ -99,15 +89,7 @@ const startBotListener = () => {
         q: `mimeType = 'application/x-tar' and name contains '${text}'`,
       };
       response = await drive.files.list(queryData);
-      const tarArray = response.data.files;
-      // console.log("TOTAL RESULT (tar)  :", tarArray.length);
-      message += `\n🔍 TAR FILES (TOP 10) : ${tarArray.length}\n\n`;
-
-      tarArray.slice(0, 10).forEach((tar, index) => {
-        message += `${index + 1}) Name: ${
-          tar.name
-        }\nLink: https://drive.google.com/folderview?id=${tar.id}\n\n`;
-      });
+      message += generateMessage("TAR (TOP 10)", 10, response.data.files);
 
       /* ------------------------------- ZIP SEARCH ------------------------------- */
       queryData = {
@@ -115,15 +97,7 @@ const startBotListener = () => {
         q: `mimeType = 'application/zip' and name contains '${text}'`,
       };
       response = await drive.files.list(queryData);
-      const zipArray = response.data.files;
-      // console.log("TOTAL RESULT (zip) :", zipArray.length);
-      message += `\n🔍 ZIP FILES (TOP 10) : ${zipArray.length}\n\n`;
-
-      zipArray.slice(0, 10).forEach((zip, index) => {
-        message += `${index + 1}) Name: ${
-          zip.name
-        }\nLink: https://drive.google.com/folderview?id=${zip.id}\n\n`;
-      });
+      message += generateMessage("ZIP (TOP 10)", 10, response.data.files);
 
       /* ------------------------------- PDF SEARCH ------------------------------- */
       queryData = {
@@ -131,15 +105,9 @@ const startBotListener = () => {
         q: `mimeType = 'application/pdf' and name contains '${text}'`,
       };
       response = await drive.files.list(queryData);
-      const pdfArray = response.data.files;
-      // console.log("TOTAL RESULT (pdf) :", pdfArray.length);
-      message += `\n🔍 PDF FILES (TOP 10) : ${pdfArray.length}\n\n`;
+      message += generateMessage("PDF (TOP 10)", 10, response.data.files);
 
-      pdfArray.slice(0, 10).forEach((pdf, index) => {
-        message += `${index + 1}) Name: ${
-          pdf.name
-        }\nLink: https://drive.google.com/folderview?id=${pdf.id}\n\n`;
-      });
+      /* -------------------------------- message ------------------------------- */
 
       message = message.slice(0, 4096); // tg message limit is 4096
       bot.sendMessage(chatId, message);
