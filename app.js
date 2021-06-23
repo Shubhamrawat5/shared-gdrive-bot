@@ -109,6 +109,9 @@ const startBotListener = () => {
 
       /* -------------------------------- message ------------------------------- */
 
+      // no data found!
+      if (!/-/g.test(message)) message += `\nno data found!`;
+
       message = message.slice(0, 4096); // tg message limit is 4096
       bot.sendMessage(chatId, message);
       // send a message to the chat acknowledging receipt of their message
