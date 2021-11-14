@@ -38,79 +38,88 @@ const startBotListener = () => {
   // listener
   bot.sendMessage(myChatId, "REMOVING BOT OLD LISTNERS");
   console.log("REMOVING BOT OLD LISTNERS");
-  bot.removeTextListener(/\/PVX (.+)/); // helps to remove given regex previous eventListneners
+  bot.removeTextListener(/\/drive (.+)/); // helps to remove given regex previous eventListneners
 
-  bot.sendMessage(myChatId, "ADD BOT LISTNER TO /PVX");
-  console.log("ADD BOT LISTNER TO /PVX");
+  bot.sendMessage(myChatId, "ADD BOT LISTNER TO /drive");
+  console.log("ADD BOT LISTNER TO /drive");
   let chatId;
-  bot.onText(/\/PVX (.+)/, async (msg, match) => {
+  bot.onText(/\/drive (.+)/, async (msg, match) => {
     try {
       chatId = msg.chat.id;
-      const text = match[1];
-      bot.sendMessage(myChatId, "Query request from TG: " + text);
+      const query = match[1];
+      bot.sendMessage(myChatId, "Query request from TG: " + query);
       bot.sendMessage(
         myChatId,
         "oAuth2Client Credentials: \n" +
           JSON.stringify(oAuth2Client.credentials)
       );
 
-      console.log("QUERY TO SEARCH: ", text);
-      let message = "💾 PVX GDRIVE 💾\n\n";
-      message += `🔍 Query: ${text} 🔍\n`;
+      console.log("QUERY TO SEARCH: ", query);
+      let message = `*💾 <{PVX}> GDRIVE 💾*\n`;
+      message += `🔍 Query: ${query} 🔍`;
 
-      /* ------------------------------ FOLDER SEARCH ----------------------------- */
-      let queryData = {
-        ...extraData,
-        q: `mimeType = 'application/vnd.google-apps.folder' and name contains '${text}'`,
-      };
+      //for mulitple drive search
+      for (let i = 0; i < ourTeamDriveId.length; ++i) {
+        message += `\n##################\n`;
+        message += `*📛 GDrive: ${ourTeamDriveId[i].name} 📛*`;
+        /* ------------------------------ FOLDER SEARCH ----------------------------- */
+        let queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'application/vnd.google-apps.folder' and name contains '${query}'`,
+        };
 
-      let response = await drive.files.list(queryData);
-      message += generateMessage("FOLDERS (TOP 10)", 10, response.data.files);
+        let response = await drive.files.list(queryData);
+        message += generateMessage("FOLDERS (TOP 10)", 10, response.data.files);
 
-      /* ------------------------------- MP4 SEARCH ------------------------------- */
-      queryData = {
-        ...extraData,
-        q: `mimeType = 'video/mp4' and name contains '${text}'`,
-      };
-      response = await drive.files.list(queryData);
-      message += generateMessage("MP4 (TOP 2)", 2, response.data.files);
+        /* ------------------------------- MP4 SEARCH ------------------------------- */
+        queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'video/mp4' and name contains '${query}'`,
+        };
+        response = await drive.files.list(queryData);
+        message += generateMessage("MP4 (TOP 2)", 2, response.data.files);
 
-      /* ------------------------------- MKV SEARCH ------------------------------- */
-      queryData = {
-        ...extraData,
-        q: `mimeType = 'video/x-matroska' and name contains '${text}'`,
-      };
-      response = await drive.files.list(queryData);
-      message += generateMessage("MKV (TOP 2)", 2, response.data.files);
+        /* ------------------------------- MKV SEARCH ------------------------------- */
+        queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'video/x-matroska' and name contains '${query}'`,
+        };
+        response = await drive.files.list(queryData);
+        message += generateMessage("MKV (TOP 2)", 2, response.data.files);
 
-      /* ------------------------------- TAR SEARCH ------------------------------- */
-      queryData = {
-        ...extraData,
-        q: `mimeType = 'application/x-tar' and name contains '${text}'`,
-      };
-      response = await drive.files.list(queryData);
-      message += generateMessage("TAR (TOP 10)", 10, response.data.files);
+        /* ------------------------------- TAR SEARCH ------------------------------- */
+        queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'application/x-tar' and name contains '${query}'`,
+        };
+        response = await drive.files.list(queryData);
+        message += generateMessage("TAR (TOP 10)", 10, response.data.files);
 
-      /* ------------------------------- ZIP SEARCH ------------------------------- */
-      queryData = {
-        ...extraData,
-        q: `mimeType = 'application/zip' and name contains '${text}'`,
-      };
-      response = await drive.files.list(queryData);
-      message += generateMessage("ZIP (TOP 10)", 10, response.data.files);
+        /* ------------------------------- ZIP SEARCH ------------------------------- */
+        queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'application/zip' and name contains '${query}'`,
+        };
+        response = await drive.files.list(queryData);
+        message += generateMessage("ZIP (TOP 10)", 10, response.data.files);
 
-      /* ------------------------------- PDF SEARCH ------------------------------- */
-      queryData = {
-        ...extraData,
-        q: `mimeType = 'application/pdf' and name contains '${text}'`,
-      };
-      response = await drive.files.list(queryData);
-      message += generateMessage("PDF (TOP 10)", 10, response.data.files);
+        /* ------------------------------- PDF SEARCH ------------------------------- */
+        queryData = {
+          ...extraData,
+          driveId: ourTeamDriveId[i].id,
+          q: `mimeType = 'application/pdf' and name contains '${query}'`,
+        };
+        response = await drive.files.list(queryData);
+        message += generateMessage("PDF (TOP 10)", 10, response.data.files);
 
-      /* -------------------------------- message ------------------------------- */
-
-      // no data found!
-      if (!/-/g.test(message)) message += `\nno data found!`;
+        // no data found!
+        if (!/-/g.test(message)) message += `\nno data found!`;
+      }
 
       message = message.slice(0, 4096); // tg message limit is 4096
       bot.sendMessage(chatId, message);
@@ -118,7 +127,7 @@ const startBotListener = () => {
     } catch (err) {
       console.log("<startBotListener> ERROR: ", err.toString());
       bot.sendMessage(myChatId, err.toString());
-      bot.sendMessage(ChatId, err.toString());
+      bot.sendMessage(chatId, err.toString());
     }
   });
 };
@@ -140,7 +149,11 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 let drive; //will hold our shared gdrive object
-let ourTeamDriveId = "0AIHchxZOKWruUk9PVA"; // ADI drive id
+// let ourTeamDriveId = "0AIHchxZOKWruUk9PVA"; // ADI drive id
+let ourTeamDriveId = [
+  { name: "Adi", id: "0AIHchxZOKWruUk9PVA" },
+  { name: "Adi 3", id: "0AD7cWi12pRrHUk9PVA" },
+]; // PVX - ADI drive id
 let extraData = {
   corpora: "drive",
   driveId: ourTeamDriveId,
@@ -153,7 +166,7 @@ let refreshToken = ""; // refersh token use to get new access token
 const SCOPES = ["https://www.googleapis.com/auth/drive.readonly"];
 // this scope can access team drive
 
-app.get("/", (req, res) => res.send(" API Running"));
+app.get("/", (req, res) => res.send("APP Running"));
 
 app.get("/getAuthURL", (req, res) => {
   bot.sendMessage(myChatId, "REQ to /getAuthURL");
@@ -236,6 +249,6 @@ app.get("/getToken", async (req, res) => {
   res.send("TOKEN ACCEPTED");
 });
 
-const PORT = process.env.PORT || 80;
+const PORT = 3001;
 app.listen(PORT, () => console.log(`Server Started ${PORT}`));
 //
